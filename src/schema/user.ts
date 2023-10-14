@@ -6,7 +6,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from "graphql";
-import UserType from "../types/User";
+import UserType from "./types";
 import userResolvers from "../resolvers/user";
 
 const UserQuery = new GraphQLObjectType({

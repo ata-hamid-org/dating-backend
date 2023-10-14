@@ -1,16 +1,11 @@
 import express from "express";
-import expressGraphQL from "express-graphql";
+import { createHandler } from "graphql-http/lib/use/express";
+
 import schema from "./schema";
 
 const app = express();
 
-app.use(
-  "/graphql",
-  expressGraphQL({
-    schema,
-    graphiql: true,
-  })
-);
+app.all("/graphql", createHandler({ schema }));
 
 app.listen(4000, () => {
   console.log("Server is running on port 4000");

@@ -5,6 +5,7 @@ import {
   GraphQLInt,
   GraphQLList,
 } from "graphql";
+import ConversationType from "./conversation";
 
 const UserType = new GraphQLObjectType({
   name: "User",
@@ -16,6 +17,7 @@ const UserType = new GraphQLObjectType({
     // ... other fields
     likedUsers: { type: new GraphQLList(GraphQLID) },
     dislikedUsers: { type: new GraphQLList(GraphQLID) },
+    conversations: { type: new GraphQLList(ConversationType) }, // Conversations associated with the user
   },
 });
 
