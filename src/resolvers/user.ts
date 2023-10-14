@@ -1,5 +1,7 @@
+import geolib from "geolib";
 import User from "../models/User";
 import { UserDocument } from "../models/User";
+import type { DatingPreferences } from "../models/User";
 
 const userResolvers = {
   Query: {
@@ -15,11 +17,54 @@ const userResolvers = {
     },
     getUsers: async (
       parent,
-      args: { limit: number; offset: number }
-    ): Promise<UserDocument[]> => {
+      args: { userId: string; limit: number; offset: number }
+    ) => {
       try {
-        const { limit = 10, offset = 0 } = args;
-        return await User.find().skip(offset).limit(limit);
+        const viewer = await User.findById(args.userId);
+        if (!viewer) {
+          throw new Error("Viewer not found");
+        }
+
+        const {
+          ageRange,
+          distance,
+          sex,
+          relationshipGoal,
+          relationshipType,
+          children,
+          sexualOrientation,
+        } = viewer.datingPreferences;
+
+        const users: UserDocument[] = await User.find({
+          _id: { $ne: viewer._id }, // Exclude the viewer user
+          sex,
+          "datingPreferences.relationshipGoal": relationshipGoal,
+          "datingPreferences.relationshipType": relationshipType,
+          "datingPreferences.children": children,
+          "datingPreferences.sexualOrientation": sexualOrientation,
+        })
+          .where("dateOfBirth")
+          .gte(new Date(new Date().getFullYear() - ageRange.max, 0, 1)) // Max age
+          .lte(new Date(new Date().getFullYear() - ageRange.min, 11, 31)) // Min age
+          .limit(args.limit)
+          .skip(args.offset);
+
+        const filteredUsers = users.filter((user) => {
+          const distanceInKm = geolib.getDistance(
+            {
+              latitude: viewer.profile.location.coordinates[1],
+              longitude: viewer.profile.location.coordinates[0],
+            },
+            {
+              latitude: user.profile.location.coordinates[1],
+              longitude: user.profile.location.coordinates[0],
+            }
+          );
+
+          return distanceInKm <= distance * 1000; // Convert distance from kilometers to meters
+        });
+
+        return filteredUsers;
       } catch (error) {
         throw new Error(`Error fetching users: ${error.message}`);
       }

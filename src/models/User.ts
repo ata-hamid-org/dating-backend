@@ -1,6 +1,6 @@
 import mongoose from "../db";
 
-interface DatingPreferences {
+export interface DatingPreferences {
   ageRange: {
     min: number;
     max: number;
