@@ -6,8 +6,22 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from "graphql";
-import UserType from "./types";
 import userResolvers from "../resolvers/user";
+import ConversationType from "./conversation";
+
+const UserType = new GraphQLObjectType({
+  name: "User",
+  fields: {
+    id: { type: GraphQLID },
+    name: { type: GraphQLString },
+    dateOfBirth: { type: GraphQLString }, // TODO: Handle dates appropriately
+    sex: { type: GraphQLString },
+    // ... other fields
+    likedUsers: { type: new GraphQLList(GraphQLID) },
+    dislikedUsers: { type: new GraphQLList(GraphQLID) },
+    conversations: { type: new GraphQLList(ConversationType) }, // Conversations associated with the user
+  },
+});
 
 const UserQuery = new GraphQLObjectType({
   name: "UserQuery",
@@ -16,7 +30,7 @@ const UserQuery = new GraphQLObjectType({
       type: UserType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return userResolvers.getUser(args.id);
+        return userResolvers.Query.getUser(parent, args);
       },
     },
     getUsers: {
@@ -26,10 +40,10 @@ const UserQuery = new GraphQLObjectType({
         offset: { type: GraphQLInt },
       },
       resolve(parent, args) {
-        return userResolvers.getUsers(args.limit, args.offset);
+        return userResolvers.Query.getUsers(parent, args);
       },
     },
-    // TODO more queries
+    // More user-related queries can be added here
   },
 });
 
@@ -40,12 +54,12 @@ const UserMutation = new GraphQLObjectType({
       type: UserType,
       args: {
         name: { type: new GraphQLNonNull(GraphQLString) },
-        dateOfBirth: { type: new GraphQLNonNull(GraphQLString) }, // TODO: might need to handle dates differently
+        dateOfBirth: { type: new GraphQLNonNull(GraphQLString) }, // TODO: Handle dates appropriately
         sex: { type: new GraphQLNonNull(GraphQLString) },
         // ... other fields
       },
       resolve(parent, args) {
-        return userResolvers.addUser(args);
+        return userResolvers.Mutation.addUser(args);
       },
     },
     likeUser: {
@@ -55,7 +69,8 @@ const UserMutation = new GraphQLObjectType({
         likedUserId: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, args) {
-        return userResolvers.likeUser(args.userId, args.likedUserId);
+        // Handle liking a user (call the appropriate resolver function)
+        return userResolvers.Mutation.likeUser(args.userId, args.likedUserId);
       },
     },
     dislikeUser: {
@@ -65,11 +80,15 @@ const UserMutation = new GraphQLObjectType({
         dislikedUserId: { type: new GraphQLNonNull(GraphQLID) },
       },
       resolve(parent, args) {
-        return userResolvers.dislikeUser(args.userId, args.dislikedUserId);
+        // Handle disliking a user (call the appropriate resolver function)
+        return userResolvers.Mutation.dislikeUser(
+          args.userId,
+          args.dislikedUserId
+        );
       },
     },
-    // Add more mutations as needed
+    // More user-related mutations can be added here
   },
 });
 
-export { UserQuery, UserMutation };
+export { UserType, UserQuery, UserMutation };
