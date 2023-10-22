@@ -5,9 +5,10 @@ import {
   GraphQLID,
   GraphQLList,
 } from "graphql";
-import { UserType, UserQuery, UserMutation } from "./user";
+import { UserQuery, UserMutation } from "./user";
 import ConversationType from "./conversation";
 import Conversation from "../models/Conversation";
+import conversationResolvers from "../resolvers/conversation";
 
 const ConversationQuery = new GraphQLObjectType({
   name: "ConversationQuery",
@@ -31,11 +32,7 @@ const ConversationMutation = new GraphQLObjectType({
     createConversation: {
       type: ConversationType,
       args: { participants: { type: new GraphQLList(GraphQLID) } },
-      resolve(parent, args) {
-        // Implement logic to create a new conversation with specified participants
-        // Return the created conversation
-        return {};
-      },
+      resolve: conversationResolvers.Mutation.createConversation, // Use the resolver from conversationResolvers
     },
     // More conversation-related mutations can be added here
   },

@@ -7,7 +7,7 @@ export interface ConversationDocument extends Document {
 
 const conversationSchema: Schema = new Schema({
   participants: [{ type: Schema.Types.ObjectId, ref: "User" }],
-  messages: [{ type: String }],
+  messages: [{ type: String, default: [] }],
 });
 
 const Conversation = mongoose.model<ConversationDocument>(

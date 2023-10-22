@@ -1,3 +1,5 @@
+// src/schema/user.ts
+
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -59,7 +61,7 @@ const UserMutation = new GraphQLObjectType({
         // ... other fields
       },
       resolve(parent, args) {
-        return userResolvers.Mutation.addUser(args);
+        return userResolvers.Mutation.addUser(parent, args);
       },
     },
     likeUser: {
@@ -70,7 +72,7 @@ const UserMutation = new GraphQLObjectType({
       },
       resolve(parent, args) {
         // Handle liking a user (call the appropriate resolver function)
-        return userResolvers.Mutation.likeUser(args.userId, args.likedUserId);
+        return userResolvers.Mutation.likeUser(parent, args);
       },
     },
     dislikeUser: {
@@ -81,10 +83,7 @@ const UserMutation = new GraphQLObjectType({
       },
       resolve(parent, args) {
         // Handle disliking a user (call the appropriate resolver function)
-        return userResolvers.Mutation.dislikeUser(
-          args.userId,
-          args.dislikedUserId
-        );
+        return userResolvers.Mutation.dislikeUser(parent, args);
       },
     },
     // More user-related mutations can be added here
