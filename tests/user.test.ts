@@ -1,4 +1,3 @@
-// tests/user.test.ts
 import mongoose from "mongoose";
 import User, { IUser } from "../models/User";
 import { createMatch } from "../services/matchService";
@@ -16,22 +15,60 @@ describe("User Model", () => {
   });
 
   it("should create and save a user successfully", async () => {
-    // Test code for creating and saving a user (unchanged)
+    const userData: IUser = {
+      email: "user@example.com",
+      password: "password123",
+      preferences: {
+        location: {
+          coordinates: [0, 0],
+          maxDistance: 10,
+        },
+      },
+      matches: [],
+    };
+
+    const user = new User(userData);
+    const savedUser = await user.save();
+
+    expect(savedUser._id).toBeDefined();
+    expect(savedUser.email).toBe(userData.email);
+    // Add additional assertions for preferences and other fields if needed
   });
 
   it("should fail to save a user with an invalid email format", async () => {
-    // Test code for invalid email format (unchanged)
+    const userData: Partial<IUser> = {
+      email: "invalid-email", // Invalid email format
+      password: "password123",
+    };
+
+    const user = new User(userData);
+
+    await expect(user.save()).rejects.toThrow();
   });
 
   it("should create a match and add it to both users", async () => {
     const user1Data: IUser = {
       email: "user1@example.com",
       password: "password123",
+      preferences: {
+        location: {
+          coordinates: [0, 0],
+          maxDistance: 10,
+        },
+      },
+      matches: [],
     };
 
     const user2Data: IUser = {
       email: "user2@example.com",
       password: "password456",
+      preferences: {
+        location: {
+          coordinates: [0, 0],
+          maxDistance: 10,
+        },
+      },
+      matches: [],
     };
 
     const user1 = new User(user1Data);

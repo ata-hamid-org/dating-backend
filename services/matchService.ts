@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import User, { IUser } from "../models/User";
 
 export async function createMatch(
@@ -31,6 +32,7 @@ export async function filterMatches(user: IUser): Promise<IUser[]> {
   return matches;
 }
 
-function generateUniqueRoomId() {
-  // Implement logic to generate a unique room ID
+function generateUniqueRoomId(): string {
+  // Generate a UUID for the room ID
+  return uuidv4();
 }

@@ -1,16 +1,39 @@
-// tests/question.test.ts
 import mongoose from "mongoose";
 import Question, { IQuestion } from "../models/Question";
 
 describe("Question Model", () => {
   // Before and after hooks for database connection
+  beforeAll(async () => {
+    await mongoose.connect("mongodb://localhost:27017/test", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    });
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.dropDatabase();
+    await mongoose.connection.close();
+  });
 
   it("should create and save a question successfully", async () => {
-    // Test code for creating and saving a question
+    const questionData: IQuestion = {
+      text: "What is your favorite color?",
+    };
+
+    const question = new Question(questionData);
+    const savedQuestion = await question.save();
+
+    expect(savedQuestion._id).toBeDefined();
+    expect(savedQuestion.text).toBe(questionData.text);
   });
 
   it("should fail to save a question without text", async () => {
-    // Test code for failing to save a question without text
+    const questionData: Partial<IQuestion> = {};
+
+    const question = new Question(questionData);
+
+    await expect(question.save()).rejects.toThrow();
   });
 
   // Add more tests for other validation rules and scenarios

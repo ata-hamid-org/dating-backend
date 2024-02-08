@@ -1,4 +1,3 @@
-// graphql/schema.ts
 import { gql } from "apollo-server-express";
 
 const typeDefs = gql`
@@ -11,8 +10,10 @@ const typeDefs = gql`
   }
 
   type Match {
-    matchId: ID!
+    id: ID!
+    users: [User!]!
     roomId: String!
+    # ... other fields
   }
 
   type UserPreferences {
@@ -25,12 +26,13 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    matchUsers(userId1: ID!, userId2: ID!): [User]
+    matchUsers(userId1: ID!, userId2: ID!): Match
     # ... other mutation definitions
   }
 
   type Subscription {
     newMessage(roomId: ID!): Message
+    # ... other subscriptions definitions
   }
 `;
 
